@@ -86,7 +86,6 @@ function userInputQuantity(id){
 //runs when a user wants to purchase an item.
 //intended to do some screening and make sure the item number and quantity are good
 function buyItem(id, desiredNumber){
-    console.log("Inside buyItem: ", id, desiredNumber);
     con.query("SELECT * from products WHERE id= ?", [id], function(err, data){
         let stock = parseInt(data[0].stock_quantity);
         let quantity = parseInt(desiredNumber);
@@ -98,6 +97,8 @@ function buyItem(id, desiredNumber){
         }
         else{
             let totalPrice = quantity * parseFloat(data[0].price);
+            //for rounding to the hundreths place
+            totalPrice = Math.round(100*totalPrice)/100;
             console.log ("Total for purchase: $" + totalPrice);
 
             //runs function to update db.
