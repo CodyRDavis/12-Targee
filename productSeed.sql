@@ -2,7 +2,7 @@ DROP DATABASE IF EXISTS targee;
 CREATE DATABASE targee;
 USE targee;
 
-CREATE TABLE targee(
+CREATE TABLE products(
 	id INTEGER(11) AUTO_INCREMENT,
     product_name VARCHAR (100),
     department_name VARCHAR(50),
@@ -11,7 +11,7 @@ CREATE TABLE targee(
     PRIMARY KEY (id)
 );
 
-INSERT INTO targee(product_name, department_name, price, stock_quantity)
+INSERT INTO products(product_name, department_name, price, stock_quantity)
 	VALUE("Nintendo Switch", "electronics", 299.99, 100),
 		("Pokemon: Let's go Pikachu", "video games", 59.99, 100),
         ("Pokemon: Let's go Eevee", "video games", 59.99, 100),
