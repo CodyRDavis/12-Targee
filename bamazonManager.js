@@ -34,16 +34,16 @@ function mainMenu(){
       ]).then((userInput => {
         switch (userInput.selection){
             case "List Inventory":
-                listInventory();
+                listInventory(1);
                 break;
             case "View Low Stock":
-                console.log("View Low Stock");
+                viewLowStock();
                 break;
             case "Add Stock":
-                console.log("Add Stock");
+                addStock();
                 break;
-            case "Add Stock":
-                console.log("Add NEW Product");
+            case "Add NEW Product":
+                newProduct();
                 break;
             case "Exit Program":
                 console.log("Quitting");
@@ -55,7 +55,7 @@ function mainMenu(){
     }));
 }
 
-function listInventory(){
+function listInventory(screen){
     console.clear();
     console.log();
     con.query("SELECT * FROM products", function(err, data){
@@ -71,7 +71,93 @@ function listInventory(){
           })
            
         console.log(t.toString());
-    mainMenu();
+
+        if (screen == 1){
+            mainMenu();
+        }
     });
     
+}
+
+function viewLowStock(){
+    console.clear();
+    console.log();
+    con.query("SELECT * FROM products WHERE stock_quantity <10", function(err, data){
+        if (err) throw err;
+        
+        var t = new easytable;
+
+        data.forEach(function(product) {
+            t.cell('Product Id', product.id, easytable.number(0))
+            t.cell('Product Name', product.product_name)
+            t.cell('Department', product.department_name)
+            t.cell('Price, USD', product.price, easytable.number(2))
+            t.cell('Number in Stock', product.stock_quantity, easytable.number(0))
+            t.newRow()
+          })
+           
+        console.log(t.toString());
+
+        if (data.length === 0){
+            console.log("No Stock items are currently low.");
+        }
+    mainMenu();
+    });
+}
+
+function addStock(){
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "id",
+            message: "Enter ID of Item to update: "
+        },{
+            type: "input",
+            name: "quantity",
+            message: "Add quantity to stock: "
+        }
+    ]).then((input) =>{
+        let updatedQty = 0
+        con.query("SELECT stock_quantity FROM products WHERE ?", {id: input.id}, function(err, data){
+            if(err) throw err;
+            updatedQty = parseInt(data[0].stock_quantity) + parseInt(input.quantity);
+            console.log(parseInt(data[0].stock_quantity));
+            console.log (parseInt(input.quantity));
+            console.log (updatedQty);
+        });
+        con.query("UPDATE products SET stock_quantity = ? WHERE id = ?",[updatedQty,input.id], function(err,res){
+            if (err) throw err;
+            mainMenu();
+        });
+    }); 
+}
+
+function newProduct(){
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "name",
+            message: "Product Name: "
+        },{
+            type: "input",
+            name: "department",
+            message: "Item Department: ",
+
+        },{
+            type: "input",
+            name: "price",
+            message: "Price: "
+        },{
+            type: "input",
+            name: "quantity",
+            message: "Quantity"
+        }
+    ]).then((input) => {
+        con.query("INSERT INTO products (product_name, department_name, price, stock_quantity)VALUE(?,?,?,?)",
+        [input.name, input.department, input.price, input.quantity], 
+        function(err, data){
+            if (err) throw err;
+            mainMenu();
+        });
+    });
 }
