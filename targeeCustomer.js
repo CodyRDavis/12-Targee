@@ -16,6 +16,7 @@ con.connect(function(err){
 });
 
 function displayInventory(){
+    console.clear();
 
     con.query("SELECT * FROM products", function(err, data){
         var t = new easytable;
@@ -119,7 +120,7 @@ function buyItem(id, desiredNumber){
         else{
             let totalPrice = quantity * parseFloat(data[0].price);
             //for rounding to the hundreths place
-            //totalPrice = Math.round(100*totalPrice)/100;
+            totalPrice = Math.round(100*totalPrice)/100;
             console.log ("Total for purchase: $" + totalPrice);
 
             //runs function to update db.
