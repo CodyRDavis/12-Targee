@@ -2,6 +2,7 @@ const mysql = require ('mysql');
 const inquirer = require ('inquirer');
 var easytable = require('easy-table');
 
+//outlining connection properties
 const con = mysql.createConnection({
     host: "localhost",
     user: 'root',
@@ -9,28 +10,20 @@ const con = mysql.createConnection({
     database: 'targee'
 });
 
+//connects to the DB
 con.connect(function(err){
     if (err) throw err;
     console.log("Connected: id =  " + con.threadId);
     displayInventory();
 });
 
+//displays the items from the DB
 function displayInventory(){
     console.clear();
 
     con.query("SELECT * FROM products", function(err, data){
         var t = new easytable;
-        let dataArray = []
-        for(let i = 0; i<data.length; i++){
-            let item = data[i];
-            dataArray.push({
-                id:item.id, 
-                name: item.product_name, 
-                department: item.department_name,
-                price: item.price, 
-                quantity: item.stock_quantity});
-            //console.log(item.id, item.product_name, item.price, item.stock_quantity);
-        }
+
         data.forEach(function(product) {
             t.cell('Product Id', product.id, easytable.number(0))
             t.cell('Product Name', product.product_name)
