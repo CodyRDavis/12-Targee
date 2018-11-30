@@ -54,6 +54,7 @@ function mainMenu(){
                 console.log("Something Had gone wrong.");
         }
     }));
+    
 }
 
 function listInventory(screen){
