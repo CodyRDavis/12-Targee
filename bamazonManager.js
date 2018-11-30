@@ -76,7 +76,6 @@ function listInventory(screen){
             mainMenu();
         }
     });
-    
 }
 
 function viewLowStock(){
@@ -121,12 +120,11 @@ function addStock(){
         con.query("SELECT stock_quantity FROM products WHERE ?", {id: input.id}, function(err, data){
             if(err) throw err;
             updatedQty = parseInt(data[0].stock_quantity) + parseInt(input.quantity);
-            console.log(parseInt(data[0].stock_quantity));
-            console.log (parseInt(input.quantity));
-            console.log (updatedQty);
+            console.log(parseInt(data[0].stock_quantity), input.quantity, updatedQty);
         });
-        con.query("UPDATE products SET stock_quantity = ? WHERE id = ?",[updatedQty,input.id], function(err,res){
+        con.query("UPDATE products SET stock_quantity = ? WHERE ?",[updatedQty,{id: input.id}], function(err,res){
             if (err) throw err;
+            console.log (updatedQty);
             mainMenu();
         });
     }); 
