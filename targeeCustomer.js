@@ -1,5 +1,6 @@
 const mysql = require ('mysql');
 const inquirer = require ('inquirer');
+var easytable = require('easy-table');
 
 const con = mysql.createConnection({
     host: "localhost",
@@ -17,10 +18,29 @@ con.connect(function(err){
 function displayInventory(){
 
     con.query("SELECT * FROM products", function(err, data){
+        var t = new easytable;
+        let dataArray = []
         for(let i = 0; i<data.length; i++){
             let item = data[i];
-            console.log(item.id, item.product_name, item.price, item.stock_quantity);
+            dataArray.push({
+                id:item.id, 
+                name: item.product_name, 
+                department: item.department_name,
+                price: item.price, 
+                quantity: item.stock_quantity});
+            //console.log(item.id, item.product_name, item.price, item.stock_quantity);
         }
+        data.forEach(function(product) {
+            t.cell('Product Id', product.id, easytable.number(0))
+            t.cell('Product Name', product.product_name)
+            t.cell('Department', product.department_name)
+            t.cell('Price, USD', product.price, easytable.number(2))
+            t.cell('Number in Stock', product.stock_quantity, easytable.number(0))
+            t.newRow()
+          })
+           
+        console.log(t.toString())
+        //console.log(dataArray);
         userInputId();
     });
 };
@@ -88,6 +108,7 @@ function userInputQuantity(id){
 function buyItem(id, desiredNumber){
     con.query("SELECT * from products WHERE id= ?", [id], function(err, data){
         let stock = parseInt(data[0].stock_quantity);
+        let price = parseFloat(data[0].price);
         let quantity = parseInt(desiredNumber);
         if (quantity <= 0){
             console.log ("You can not buy less than 1 of an item.")
@@ -98,7 +119,7 @@ function buyItem(id, desiredNumber){
         else{
             let totalPrice = quantity * parseFloat(data[0].price);
             //for rounding to the hundreths place
-            totalPrice = Math.round(100*totalPrice)/100;
+            //totalPrice = Math.round(100*totalPrice)/100;
             console.log ("Total for purchase: $" + totalPrice);
 
             //runs function to update db.
