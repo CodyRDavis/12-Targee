@@ -10,6 +10,7 @@ const con = mysql.createConnection({
     database: 'targee'
 });
 
+
 //connects to the DB
 con.connect(function(err){
     if (err) throw err;
@@ -116,17 +117,20 @@ function addStock(){
             message: "Add quantity to stock: "
         }
     ]).then((input) =>{
-        let updatedQty = 0
+        let updatedQty = 0;
         con.query("SELECT stock_quantity FROM products WHERE ?", {id: input.id}, function(err, data){
             if(err) throw err;
-            updatedQty = parseInt(data[0].stock_quantity) + parseInt(input.quantity);
+            console.log(data);
+            updatedQty = parseInt(parseInt(data[0].stock_quantity) + parseInt(input.quantity));
             console.log(parseInt(data[0].stock_quantity), input.quantity, updatedQty);
+            
+            con.query("UPDATE products SET ? WHERE ?",[{stock_quantity: updatedQty}, {id: input.id}], function(err,res){
+                if (err) throw err;
+                console.log("AFTER EVERYTHING....: " + updatedQty);
+                mainMenu();
+            });
         });
-        con.query("UPDATE products SET stock_quantity = ? WHERE ?",[updatedQty,{id: input.id}], function(err,res){
-            if (err) throw err;
-            console.log (updatedQty);
-            mainMenu();
-        });
+        
     }); 
 }
 
